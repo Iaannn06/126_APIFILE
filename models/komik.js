@@ -18,18 +18,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
+
     imageType: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING
     },
     imageName: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING
     },
     imageData: {
-      type: DataTypes.BLOB('long'),
+      type: DataTypes.BLOB('long')
     }
+
   }, {
     tableName: 'Komik',
-    timestamps: true 
   });
 
   return Komik;
