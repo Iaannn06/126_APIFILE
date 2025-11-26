@@ -1,31 +1,41 @@
+const { Komik } = require('../models'); 
+
 async function createKomik(database, komikData) {
-    const {judul, description, author, imageType, imageName, imageData} = komikData;
+    const { judul, deskripsi, penulis, imageType, imageName, imageData } = komikData;
 
-    if (!judul || !description || !author) {
-
-        throw new Error('judul, description, and author wajib diisi!.');
+    if (!judul || !deskripsi || !penulis) {
+        throw new Error('Judul, deskripsi, dan penulis wajib diisi!');
     }
 
     const newKomik = await database.Komik.create({
         judul,
-        description,
-        author,
+        deskripsi,
+        penulis,
         imageType: imageType || null,
         imageName: imageName || null,
         imageData: imageData || null
     });
 
-    return newKomik;
+
+    const result = newKomik.toJSON();
+    
+    if (result.imageData) {
+        result.imageData = "Image uploaded successfully (Base64 hidden)";
+    }
+    
+    return result;
 }
 
 async function getAllKomik(database) {
     const komiks = await database.Komik.findAll();
 
     return komiks.map(k => {
-        if (k.imageData) {
-            k.imageData = k.imageData.toString('base64');
+        const komikJSON = k.toJSON();
+        
+        if (komikJSON.imageData) {
+            komikJSON.imageData = `data:${komikJSON.imageType};base64,${komikJSON.imageData.toString('base64')}`;
         }
-        return k;
+        return komikJSON;
     });
 }
 
@@ -33,11 +43,13 @@ async function getKomikById(database, id) {
     const komik = await database.Komik.findByPk(id);
     if (!komik) throw new Error('Komik tidak ditemukan!');
 
-    if (komik.imageData) {
-        komik.imageData = komik.imageData.toString('base64');
+    const komikJSON = komik.toJSON();
+
+    if (komikJSON.imageData) {
+        komikJSON.imageData = `data:${komikJSON.imageType};base64,${komikJSON.imageData.toString('base64')}`;
     }
 
-    return komik;
+    return komikJSON;
 }
 
 async function updateKomik(database, id, komikData) {
@@ -47,17 +59,23 @@ async function updateKomik(database, id, komikData) {
     }
 
     await komik.update(komikData);
-    return komik;
+    
+    const result = komik.toJSON();
+    if (result.imageData) {
+        result.imageData = "Image updated successfully";
+    }
+    
+    return result;
 }
 
 async function deleteKomik(database, id) {
     const komik = await database.Komik.findByPk(id);
     if (!komik) {
-        throw new Error('Komik dengan ID ${id} tidak ditemukan!');
+        throw new Error(`Komik dengan ID ${id} tidak ditemukan!`);
     }
 
     await komik.destroy();
-    return { message: 'Komik dengan ID ${id} telah dihapus.' };
+    return { message: `Komik dengan ID ${id} telah dihapus.` };
 }
 
 module.exports = {
