@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const Komik = sequelize.define('Komik', {
     id: {
       type: DataTypes.INTEGER,
-      primaryKey: true, 
+      primaryKey: true,
       autoIncrement: true,
       allowNull: false
     },
@@ -17,13 +17,20 @@ module.exports = (sequelize, DataTypes) => {
     deskripsi: {
       type: DataTypes.TEXT,
       allowNull: false
-    }, imageType: {
-      imageType: DataTypes.STRING,
-      imageName: DataTypes.STRING,
-      imageData: DataTypes.BLOB('long'),
-  }, 
+    },
+    imageType: {
+      type: DataTypes.STRING,
+    },
+    imageName: {
+      type: DataTypes.STRING,
+    },
+    imageData: {
+      type: DataTypes.BLOB('long'),
+    }
+  }, {
     tableName: 'Komik',
+    timestamps: true 
   });
-    return Komik;
 
+  return Komik;
 };
